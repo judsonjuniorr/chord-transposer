@@ -28,9 +28,9 @@ export const CHORD_RANKS: Map<string, number> = new Map([
 ]);
 
 // Regex for recognizing chords
-const TRIAD_PATTERN = "(M|maj|major|m|min|minor|dim|sus|dom|aug|\\+|-)";
+const TRIAD_PATTERN = "(M|maj|major|m|min|minor|dim|sus|dom|aug|\\+|-)?";
 const ADDED_TONE_PATTERN = "(\\(?([/\\.\\+]|add)?[#b]?\\d+[\\+-]?\\)?)";
-const SUFFIX_PATTERN = `(?<suffix>\\(?${TRIAD_PATTERN}${ADDED_TONE_PATTERN}*\\)?)`;
+const SUFFIX_PATTERN = `(?<suffix>${TRIAD_PATTERN}${ADDED_TONE_PATTERN}*)`;
 const BASS_PATTERN = "(\\/(?<bass>[A-G](#|b)?))?";
 
 export const ROOT_PATTERN = "(?<root>[A-G](#|b)?)";
@@ -59,12 +59,12 @@ export class Chord {
     if (this.bass) {
       return this.root + this.suffix + "/" + this.bass;
     } else {
-      return this.root + this.suffix;
+      return this.root + (this.suffix || "");
     }
   }
 
   isMinor(): boolean {
-    return MINOR_SUFFIX_REGEX.test(this.suffix);
+    return this.suffix ? MINOR_SUFFIX_REGEX.test(this.suffix) : false;
   }
 
   static parse(token: string): Chord {
